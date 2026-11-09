@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Mis Ofertas')}"></head>
+<link th:href="@{/css/home.css}" rel="stylesheet">
+<link rel="icon" th:href="@{/icono/favicon.ico}" type="image/x-icon">
+<body>
+	<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+	<div class="container-fluid mt-4">
+		<!-- Contadores -->
+		<div class="row mb-4">
+			<div class="col-md-2">
+				<div class="stats-card" id="statsTotal">
+					<div class="stats-number" th:text="${total}">0</div>
+					<div class="stats-label" th:text="#{stats.total}">Total</div>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class="stats-card" id="statsEntregadas">
+					<div class="stats-number" th:text="${entregadas}">0</div>
+					<div class="stats-label" th:text="#{stats.entregadas}">Inscritos</div>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class="stats-card" id="statsEnRevision">
+					<div class="stats-number" th:text="${enRevision}">0</div>
+					<div class="stats-label" th:text="#{stats.enRevision}">En
+						revisión</div>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class="stats-card" id="statsEntrevistas">
+					<div class="stats-number" th:text="${entrevistas}">0</div>
+					<div class="stats-label" th:text="#{stats.entrevistas}">Entrevistas</div>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class="stats-card" id="statsDescartadas">
+					<div class="stats-number" th:text="${descartadas}">0</div>
+					<div class="stats-label" th:text="#{stats.descartadas}">Descartados</div>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class="stats-card" id="statsCerrados">
+					<div class="stats-number" th:text="${cerrados}">0</div>
+					<div class="stats-label">Cerrados</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Contenido principal -->
+		<div class="content-card">
+			<!-- Filtros -->
+			<div class="filter-card">
+				<form th:action="@{/home}" method="get"
+					class="row g-3 align-items-end">
+					<div class="row">
+						<div class="col-md-3">
+							<label class="form-label fw-bold"> <i
+								class="bi bi-search"></i> <span th:text="#{label.empresa}">Buscar</span>:
+							</label> <input type="text" class="form-control" name="texto"
+								th:value="${texto}" placeholder="Empresa..."
+								list="listaEmpresas" autocomplete="on" autocapitalize="off"
+								data-autocorrect="off" spellcheck="false">
+							<datalist id="listaEmpresas">
+								<option th:each="empresa : ${empresas}" th:value="${empresa}"></option>
+							</datalist>
+						</div>
+
+						<div class="col-md-2">
+							<label class="form-label fw-bold" th:text="#{label.sector}">Sector</label>
+							<select class="form-select" name="sector">
+								<option value="" th:text="#{select.all}">(Todos)</option>
+								<option th:each="s : ${sectores}" th:value="${s}" th:text="${s}"
+									th:selected="${s == sector}">Sector</option>
+							</select>
+						</div>
+
+						<div class="col-md-2">
+							<label class="form-label fw-bold" th:text="#{label.estado}">Estado</label>
+							<select class="form-select" name="estado">
+								<option value="" th:text="#{select.all}">(Todos)</option>
+								<option th:each="e : ${estados}" th:value="${e}" th:text="${e}"
+									th:selected="${e == estado}">Estado</option>
+							</select>
+						</div>
+
+						<div class="col-md-2">
+							<label class="form-label fw-bold" th:text="#{label.metodoEnvio}">Método</label>
+							<select class="form-select" name="metodo">
+								<option value="" th:text="#{select.all}">(Todos)</option>
+								<option th:each="m : ${metodosEnvio}" th:value="${m}"
+									th:text="${m}" th:selected="${m == metodo}">Método</option>
+							</select>
+						</div>
+
+					</div>
+
+					<div class="row mt-3">
+						<div class="col-md-12 d-flex gap-2">
+							<button type="submit" class="btn btn-primary">
+								<i class="bi bi-funnel"></i> <span th:text="#{btn.filter}">Filtrar</span>
+							</button>
+							<a th:href="@{/home}" class="btn btn-secondary"> <i
+								class="bi bi-x-circle"></i> <span th:text="#{btn.clear}">Limpiar</span>
+							</a>
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<div class="d-flex justify-content-between align-items-center mb-3">
+				<h3>
+					<i class="bi bi-list-ul"></i> <span th:text="#{table.title}">Mis
+						Ofertas</span>
+				</h3>
+				<div>
+					<a th:href="@{/export/excel}"
+						class="btn btn-success btn-sm btn-export"><i
+						class="bi bi-file-earmark-excel"></i> <span
+						th:text="#{btn.export.excel}">Excel</span></a> <a
+						th:href="@{/export/pdf}" class="btn btn-danger btn-sm btn-export"><i
+						class="bi bi-filetype-pdf"></i> <span th:text="#{btn.export.pdf}">PDF</span></a>
+					<a th:href="@{/importar}"
+						class="btn btn-secondary btn-sm btn-export"><i
+						class="bi bi-upload"></i> <span th:text="#{btn.import}">Importar</span></a>
+					<a th:href="@{/oferta/nueva}"
+						class="btn btn-primary btn-sm btn-export"><i
+						class="bi bi-plus-circle"></i> <span th:text="#{btn.new}">Nueva
+							Oferta</span></a>
+				</div>
+			</div>
+
+			<div class="table-responsive">
+				<table id="tablaOfertas" class="table table-striped table-hover">
+					<thead>
+						<tr>
+							<th th:text="#{table.id}">ID</th>
+							<th th:text="#{table.empresa}">Empresa</th>
+							<th th:text="#{table.puesto}">Puesto</th>
+							<th th:text="#{table.sector}">Sector</th>
+
+
+							<th th:text="#{table.fechaPublicacion}">F. Publicación</th>
+							<th th:text="#{table.fechaEnvio}">F. Envio</th>
+							<th th:text="#{table.modalidad}">Modalidad</th>
+							<th th:text="#{table.metodoEnvio}">Método Envío</th>
+							<th th:text="#{table.webPropia}">Web Propia</th>
+							<th th:text="#{table.estado}">Estado</th>
+							<th th:text="#{table.enlace}">Enlace oferta</th>
+							<th th:text="#{table.contacto}">Contacto</th>
+							<th th:text="#{table.telefono}">Teléfono</th>
+							<th th:text="#{table.fechaEntrevista}">F. Entrevista</th>
+							<th th:text="#{table.horaEntrevista}">H. Entrevista</th>
+
+							<th th:text="#{table.notas}">Notas</th>
+							<th th:text="#{table.acciones}">Acciones</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="oferta : ${ofertas}"
+							th:class="${oferta.estado == 'Inscrito'} ? 'fila-inscrito' :
+                                      (${oferta.estado == 'En revisión'} ? 'fila-en-revision' :
+                                      (${oferta.estado == 'Entrevista'} ? 'fila-entrevista' :
+                                      (${oferta.estado == 'Descartado'} ? 'fila-descartado' :
+                                      (${oferta.estado == 'Cerrado'} ? 'fila-cerrado' : ''))))">
+							<td th:text="${oferta.id}">1</td>
+							<td th:text="${oferta.empresa}">Empresa</td>
+							<td th:text="${oferta.puesto}">Puesto</td>
+							<td th:text="${oferta.sector}">Sector</td>
+
+
+							<td th:text="${oferta.fechaPublicacion}"></td>
+							<td class="fechaEnvio" th:text="${oferta.fechaEnvio}"></td>
+							<td th:text="${oferta.modalidad}"></td>
+							<td th:text="${oferta.metodoEnvio}"></td>
+							<td><span th:if="${oferta.webPropia}"
+								class="badge bg-secondary webPropia" th:text="#{files.yes}">Sí</span>
+								<span th:unless="${oferta.webPropia}"
+								class="badge bg-light text-dark border webPropia"
+								th:text="#{files.no}">No</span></td>
+							<td><span
+								th:class="'badge ' +
+                                    (${oferta.estado == 'Inscrito'} ? 'badge-inscrito' :
+                                    (${oferta.estado == 'En espera' || oferta.estado == 'En revisión'} ? 'badge-en-revision' :
+                                    (${oferta.estado == 'Entrevista'} ? 'badge-entrevista' :
+                                    (${oferta.estado == 'Cerrado'} ? 'badge-cerrado' :
+                                    'badge-descartado'))))"
+								th:text="${oferta.estado}">Estado</span></td>
+							<td><a
+								th:if="${oferta.enlaceOferta != null and !oferta.enlaceOferta.isEmpty()}"
+								th:href="${oferta.enlaceOferta}" target="_blank"
+								class="text-decoration-none enlace"
+								th:title="${oferta.enlaceOferta}" data-bs-toggle="tooltip"
+								data-bs-placement="top"> <i class="bi bi-link-45deg"></i>
+							</a> <span
+								th:if="${oferta.enlaceOferta == null or oferta.enlaceOferta.isEmpty()}"
+								class="text-muted" th:text="#{table.noData}">—</span></td>
+							<td th:text="${oferta.contacto}">Contacto</td>
+							<td th:text="${oferta.telefono}">Teléfono</td>
+							<td th:text="${oferta.fechaEntrevista}"></td>
+							<td th:text="${oferta.horaEntrevista}"></td>
+
+							<td class="col-notas"
+								th:if="${oferta.notas != null and !oferta.notas.isEmpty()}"
+								th:text="${oferta.notas}"
+								th:attr="data-notas=${oferta.notas}, data-hint=#{table.notesHint}"
+								onclick="abrirModalNotas(this)"></td>
+							<td th:if="${oferta.notas == null or oferta.notas.isEmpty()}"
+								class="text-muted" th:text="#{table.noData}">—</td>
+							<td>
+								<div class="btn-group" role="group">
+									<a th:if="${oferta.estado == 'Entrevista'}"
+										th:href="@{/oferta/ics/{id}(id=${oferta.id})}"
+										class="btn btn-sm btn-info text-white"
+										th:title="#{table.icsTooltip}"> <i
+										class="bi bi-calendar-event"></i>
+									</a> <a th:unless="${oferta.estado == 'Entrevista'}"
+										class="btn btn-sm btn-secondary btn-ics-disabled"
+										th:title="#{table.icsDisabled}"> <i
+										class="bi bi-calendar-event"></i>
+									</a> <a th:href="@{/oferta/editar/{id}(id=${oferta.id})}"
+										class="btn btn-sm btn-outline-primary" th:title="#{btn.edit}">
+										<i class="bi bi-pencil"></i>
+									</a> <a th:href="@{/oferta/eliminar/{id}(id=${oferta.id})}"
+										class="btn btn-sm btn-outline-danger"
+										th:onclick="return confirm([[#{table.confirmDelete}]]);"
+										th:title="#{btn.delete}"> <i class="bi bi-trash"></i>
+									</a>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div th:replace="~{fragments/modals :: modal-notas}"></div>
+	<div th:replace="~{fragments/modals :: modal-notificacion}"></div>
+	<div th:replace="~{fragments/modals :: flash-data}"></div>
+
+	<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+	<script
+		src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+	<script
+		src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script th:src="@{/js/notificaciones.js}"></script>
+	<script th:src="@{/js/notas.js}"></script>
+	<script th:src="@{/js/tabla.js}"></script>
+	<script th:src="@{/js/busqueda.js}"></script>
+</body>
+</html>

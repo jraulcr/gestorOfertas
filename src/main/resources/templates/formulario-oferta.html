@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title th:text="${modoEdicion} ? 'Editar Oferta' : 'Nueva Oferta'">Oferta</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+	rel="stylesheet">
+<link th:href="@{/css/styles.css}" rel="stylesheet">
+<link th:href="@{/css/form.css}" rel="stylesheet">
+<link rel="icon" th:href="@{/icono/favicon.ico}" type="image/x-icon">
+</head>
+<body>
+	<div class="container mt-4 mb-4">
+		<div class="form-card">
+			<div class="form-header">
+				<h2 class="mb-0"
+					th:text="${modoEdicion} ? 'Editar Oferta' : 'Nueva Oferta'">Oferta</h2>
+			</div>
+
+			<form th:action="@{/oferta/guardar}" method="post"
+				enctype="multipart/form-data" th:object="${oferta}" id="formOferta">
+
+				<input type="hidden" th:field="*{id}">
+
+				<div class="row mb-3">
+					<div class="col-md-6">
+						<label class="form-label">Empresa *</label> <input type="text"
+							class="form-control" th:field="*{empresa}" required>
+					</div>
+					<div class="col-md-6">
+						<label class="form-label">Puesto *</label> <input type="text"
+							class="form-control" th:field="*{puesto}" required>
+					</div>
+				</div>
+
+				<div class="row mb-3">
+					<div class="col-md-4">
+						<label class="form-label">Sector / Actividad</label> <select
+							class="form-select" th:field="*{sector}">
+							<option value="">Seleccionar...</option>
+							<option th:each="sector : ${sectores}" th:value="${sector}"
+								th:text="${sector}">Sector</option>
+						</select>
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">Contacto (RRHH)</label> <input
+							type="text" class="form-control" th:field="*{contacto}">
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">Teléfono</label> <input type="tel"
+							class="form-control" th:field="*{telefono}">
+					</div>
+				</div>
+
+				<div class="row mb-3">
+					<div class="col-md-6">
+						<label class="form-label">Enlace oferta</label> <input type="url"
+							class="form-control" th:field="*{enlaceOferta}">
+					</div>
+					<div class="col-md-3">
+						<label class="form-label">Fecha Publicación</label> <input
+							type="date" class="form-control"
+							th:value="${oferta.fechaPublicacion != null} ? ${#temporals.format(oferta.fechaPublicacion, 'yyyy-MM-dd')} : ''"
+							name="fechaPublicacion" id="fechaPublicacion">
+					</div>
+					<div class="col-md-3">
+						<label class="form-label">Fecha Envío CV</label> <input
+							type="date" class="form-control"
+							th:value="${oferta.fechaEnvio != null} ? ${#temporals.format(oferta.fechaEnvio, 'yyyy-MM-dd')} : ''"
+							name="fechaEnvio" id="fechaEnvio">
+					</div>
+				</div>
+
+				<div class="row mb-3">
+					<div class="col-md-4">
+						<label class="form-label">Modalidad</label> <select
+							class="form-select" th:field="*{modalidad}">
+							<option value="">Seleccionar...</option>
+							<option th:each="modalidad : ${modalidades}"
+								th:value="${modalidad}" th:text="${modalidad}">Modalidad</option>
+						</select>
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">Método Envío</label> <select
+							class="form-select" th:field="*{metodoEnvio}">
+							<option value="">Seleccionar...</option>
+							<option th:each="metodo : ${metodosEnvio}" th:value="${metodo}"
+								th:text="${metodo}">Método</option>
+						</select>
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">Estado</label> <select
+							class="form-select" th:field="*{estado}" id="estado">
+							<option value="">Seleccionar...</option>
+							<option th:each="estado : ${estados}" th:value="${estado}"
+								th:text="${estado}">Estado</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="mb-3">
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox"
+							th:field="*{webPropia}" id="webPropia"> <label
+							class="form-check-label" for="webPropia">¿Web propia?</label>
+					</div>
+				</div>
+
+				<div class="interview-section mb-3">
+					<h6 class="mb-3">
+						<i class="bi bi-calendar-event"></i> Datos de la entrevista
+					</h6>
+					<div class="row">
+						<div class="col-md-6">
+							<label class="form-label">Fecha entrevista</label> <input
+								type="date" class="form-control"
+								th:value="${oferta.fechaEntrevista != null} ? ${#temporals.format(oferta.fechaEntrevista, 'yyyy-MM-dd')} : ''"
+								name="fechaEntrevista" id="fechaEntrevista">
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Hora entrevista</label> <input
+								type="time" class="form-control" th:field="*{horaEntrevista}"
+								id="horaEntrevista">
+						</div>
+					</div>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label">Notas</label>
+					<textarea class="form-control" rows="3" th:field="*{notas}"></textarea>
+				</div>
+
+				<!-- ========================================== -->
+				<!-- DOCUMENTOS ADJUNTOS                        -->
+				<!-- ========================================== -->
+				<div class="mb-4">
+					<label class="form-label fw-bold"> <i
+						class="bi bi-paperclip"></i> Documentos adjuntos
+					</label>
+
+					<div id="archivosContainer" class="archivos-container">
+
+						<!-- Archivos existentes (BBDD) -->
+						<div
+							th:if="${archivosAdjuntos != null and !archivosAdjuntos.isEmpty()}">
+							<small class="text-muted d-block mb-2"> <i
+								class="bi bi-database"></i> Archivos guardados en BBDD:
+							</small>
+
+							<div th:each="archivo : ${archivosAdjuntos}" class="file-badge"
+								th:data-id="${archivo.id}">
+
+								<!-- Bloque clicable: abre el archivo -->
+								<a th:href="@{/archivos/{id}(id=${archivo.id})}" target="_blank"
+									class="text-decoration-none text-dark"
+									th:title="${archivo.nombre}"> <i
+									th:if="${#strings.endsWith(archivo.nombre, '.pdf')}"
+									class="bi bi-file-earmark-pdf text-danger"></i> <i
+									th:if="${#strings.endsWith(archivo.nombre, '.doc') or #strings.endsWith(archivo.nombre, '.docx')}"
+									class="bi bi-file-earmark-word text-primary"></i> <i
+									th:if="${#strings.endsWith(archivo.nombre, '.jpg') or #strings.endsWith(archivo.nombre, '.jpeg') or #strings.endsWith(archivo.nombre, '.png') or #strings.endsWith(archivo.nombre, '.gif')}"
+									class="bi bi-file-earmark-image text-success"></i> <i
+									th:unless="${#strings.endsWith(archivo.nombre, '.pdf') or #strings.endsWith(archivo.nombre, '.doc') or #strings.endsWith(archivo.nombre, '.docx') or #strings.endsWith(archivo.nombre, '.jpg') or #strings.endsWith(archivo.nombre, '.jpeg') or #strings.endsWith(archivo.nombre, '.png') or #strings.endsWith(archivo.nombre, '.gif')}"
+									class="bi bi-file-earmark text-secondary"></i> <span
+									th:text="${archivo.nombre}">archivo.pdf</span> <small
+									class="text-muted ms-1"
+									th:text="${#numbers.formatDecimal(archivo.tamano / 1024.0, 1, 2) + ' KB'}">0
+										KB</small>
+								</a>
+
+								<!-- PAPELERA COMO BOTÓN, FUERA DEL ENLACE -->
+								<button type="button"
+									class="btn btn-sm btn-outline-danger ms-2 btn-eliminar-archivo"
+									title="Eliminar archivo" th:data-id="${archivo.id}"
+									th:data-nombre="${archivo.nombre}">
+									<i class="bi bi-trash"></i>
+								</button>
+
+								<!-- Checkbox oculto que viaja al controller como archivosAEliminar -->
+								<input type="checkbox" name="archivosAEliminar"
+									th:value="${archivo.id}" th:id="'check-' + ${archivo.id}"
+									style="display: none;">
+							</div>
+						</div>
+
+						<!-- Sin archivos -->
+						<div
+							th:unless="${archivosAdjuntos != null and !archivosAdjuntos.isEmpty()}"
+							id="mensajeVacio" class="text-muted">
+							<i class="bi bi-info-circle"></i> No hay archivos adjuntos aún.
+						</div>
+					</div>
+
+					<!-- Input para adjuntar archivos nuevos -->
+					<div class="mt-2">
+						<input type="file" id="nuevosArchivos" class="form-control"
+							name="archivos" multiple
+							accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx">
+						<div class="form-text">
+							<i class="bi bi-info-circle"></i> Formatos: JPG, PNG, GIF, PDF,
+							DOC, DOCX. Máximo 10MB cada uno.
+						</div>
+					</div>
+				</div>
+
+				<!-- Botones -->
+				<div class="d-flex gap-2 justify-content-end">
+					<a th:href="@{/home}" class="btn btn-secondary"> <i
+						class="bi bi-arrow-left"></i> Cancelar
+					</a>
+					<button type="submit" class="btn btn-primary">
+						<i class="bi bi-check-circle"></i> Guardar oferta
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Modal de notificación (inline, sin fragmentos externos) -->
+	<div class="modal fade" id="notificacionModal" tabindex="-1"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header modal-header-gradient">
+					<h5 class="modal-title" id="modalTitulo"></h5>
+					<button type="button" class="btn-close btn-close-white"
+						data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body text-center p-4">
+					<div id="modalIcono" class="mb-3" style="font-size: 3rem;"></div>
+					<p id="modalMensaje" class="mb-4 fs-5"></p>
+					<button type="button" class="btn btn-primary px-4"
+						data-bs-dismiss="modal">Aceptar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Datos flash para notificaciones -->
+	<div th:if="${mensaje}" id="flashData" th:data-mensaje="${mensaje}"
+		th:data-tipo="${tipoMensaje}" style="display: none;"></div>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script th:src="@{/js/archivos.js}"></script>
+	<script th:src="@{/js/formulario.js}"></script>
+	<script th:src="@{/js/notificaciones.js}"></script>
+
+
+</body>
+</html>

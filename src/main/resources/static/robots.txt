@@ -1,0 +1,3 @@
+# Bloquear todos los rastreadores de nuestra aplicación privada
+User-agent: *
+Disallow: /

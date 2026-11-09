@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Modal de notas completas -->
+<div th:fragment="modal-notas" class="modal fade" id="notasModal" tabindex="-1" aria-labelledby="notasModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header modal-header-gradient">
+                <h5 class="modal-title" id="notasModalLabel">
+                    <i class="bi bi-journal-text"></i> <span th:text="#{table.notesModalTitle}">Notas completas</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body notas-modal-body">
+                <p id="notasContenido" class="mb-0"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> <span th:text="#{btn.close}">Cerrar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de notificaciones -->
+<div th:fragment="modal-notificacion" class="modal fade" id="notificacionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-5">
+                <div id="modalIcono" class="mb-3" style="font-size: 4rem;"></div>
+                <h4 id="modalTitulo" class="mb-3 fw-bold"></h4>
+                <p id="modalMensaje" class="mb-4 text-muted fs-5"></p>
+                <button type="button" class="btn btn-primary px-5 py-2" data-bs-dismiss="modal" th:text="#{btn.accept}">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Elemento oculto para datos flash -->
+<div th:fragment="flash-data" th:if="${mensaje}" id="flashData"
+     th:data-mensaje="${mensaje}"
+     th:data-tipo="${tipoMensaje}"
+     style="display: none;"></div>
+
+</html>

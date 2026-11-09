@@ -1,0 +1,24 @@
+@charset "UTF-8";
+/* ============================================
+   FORMULARIOS
+   ============================================ */
+
+.form-control:disabled, .form-select:disabled {
+    background-color: #e9ecef;
+    opacity: 0.6;
+}
+
+.form-control:focus:invalid {
+    border-color: #dc3545;
+}
+
+input#nuevosArchivos {
+	width: 40%;
+}
+
+
+@media ( max-width : 768px) {
+	input#nuevosArchivos {
+		width: 100%;
+	}
+}
